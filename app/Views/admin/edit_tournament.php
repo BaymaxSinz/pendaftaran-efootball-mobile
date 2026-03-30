@@ -23,50 +23,68 @@
                             <i class="fas fa-edit fa-2x text-warning"></i>
                         </div>
                         <h4 class="card-title fw-bolder text-uppercase mb-1" style="letter-spacing: 1px;">Edit <span class="text-warning">Turnamen</span></h4>
-                        <p class="text-light opacity-50 small">Sesuaikan detail dan kuota turnamen eFootball kamu</p>
                     </div>
                     
-                    <form action="<?= base_url('/admin/update/' . $turnamen['id']); ?>" method="POST">
+                    <form action="<?= base_url('/admin/update/' . $turnamen['id']); ?>" method="POST" enctype="multipart/form-data">
                         <?= csrf_field(); ?>
                         
                         <div class="mb-4">
                             <label class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Nama Turnamen</label>
                             <div class="input-group shadow-sm">
                                 <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fas fa-trophy"></i></span>
-                                <input type="text" class="form-control bg-dark text-white border-secondary" name="name" value="<?= esc($turnamen['name']); ?>" placeholder="Contoh: eFootball Championship 2024" required>
+                                <input type="text" class="form-control bg-dark text-white border-secondary" name="name" value="<?= esc($turnamen['name']); ?>" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Poster Turnamen</label>
+                            
+                            <?php if(!empty($turnamen['poster'])): ?>
+                                <div class="mb-3 text-center bg-dark p-2 rounded-3 border border-secondary">
+                                    <img src="<?= base_url('uploads/posters/' . $turnamen['poster']); ?>" alt="Poster" class="img-fluid rounded-3" style="max-height: 250px; object-fit: contain;">
+                                </div>
+                            <?php endif; ?>
+                            
+                            <input type="hidden" name="old_poster" value="<?= esc($turnamen['poster'] ?? ''); ?>">
+                            <input class="form-control bg-dark text-white border-secondary" type="file" name="poster" accept="image/*">
+                            <div class="form-text text-info small mt-1" style="font-size: 0.75rem;"><i class="fas fa-mobile-alt me-1"></i> Rekomendasi rasio 9:16 (Ukuran IG Story / 1080x1920).</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Total Hadiah (Prizepool)</label>
+                            <div class="input-group shadow-sm">
+                                <span class="input-group-text bg-dark border-secondary text-warning"><i class="fas fa-gift"></i></span>
+                                <input type="text" class="form-control bg-dark text-white border-secondary fw-bold text-warning" name="prize" value="<?= esc($turnamen['prize'] ?? ''); ?>" required>
                             </div>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Deskripsi Singkat</label>
-                            <textarea class="form-control bg-dark text-white border-secondary rounded-3" name="description" rows="3" placeholder="Tuliskan detail atau hadiah turnamen..." required><?= esc($turnamen['description']); ?></textarea>
+                            <textarea class="form-control bg-dark text-white border-secondary rounded-3" name="description" rows="3" required><?= esc($turnamen['description']); ?></textarea>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Rules & Regulation Detail</label>
                             <div class="input-group shadow-sm">
                                 <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fas fa-scroll"></i></span>
-                                <textarea class="form-control bg-dark text-white border-secondary rounded-end" name="rules" rows="4" placeholder="Tuliskan aturan main di sini..." required><?= esc($turnamen['rules'] ?? ''); ?></textarea>
+                                <textarea class="form-control bg-dark text-white border-secondary rounded-end" name="rules" rows="4" required><?= esc($turnamen['rules'] ?? ''); ?></textarea>
                             </div>
                         </div>
 
                         <div class="row mb-4">
                             <div class="col-6">
-                                <label class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Total Kuota Tim</label>
+                                <label class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Total Kuota</label>
                                 <div class="input-group shadow-sm">
-                                    <span class="input-group-text bg-dark border-secondary text-warning"><i class="fas fa-layer-group"></i></span>
+                                    <span class="input-group-text bg-dark border-secondary text-info"><i class="fas fa-layer-group"></i></span>
                                     <input type="number" name="quota" class="form-control bg-dark text-white border-secondary" value="<?= esc($turnamen['quota'] ?? '32'); ?>" min="2" required>
                                 </div>
-                                <div class="form-text text-info small mt-1" style="font-size: 0.7rem;">Misal: Max 32 Tim bertanding.</div>
                             </div>
-
                             <div class="col-6">
                                 <label class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Slot / Akun</label>
                                 <div class="input-group shadow-sm">
                                     <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fas fa-users-cog"></i></span>
                                     <input type="number" name="max_slots" class="form-control bg-dark text-white border-secondary" value="<?= esc($turnamen['max_slots'] ?? '1'); ?>" min="1" required>
                                 </div>
-                                <div class="form-text text-info small mt-1" style="font-size: 0.7rem;">Berapa tim per 1 user.</div>
                             </div>
                         </div>
 
@@ -87,9 +105,18 @@
                         </button>
                     </form>
 
+                    <div class="card bg-black border border-danger shadow-sm rounded-4 mb-4">
+                        <div class="card-body p-3 text-center">
+                            <h6 class="fw-bold text-uppercase text-danger mb-2" style="font-size: 0.85rem;"><i class="fas fa-exclamation-triangle me-1"></i> Zona Berbahaya</h6>
+                            <a href="<?= base_url('/admin/delete/' . $turnamen['id']); ?>" class="btn btn-outline-danger btn-sm w-100 fw-bold rounded-pill" onclick="return confirm('PERINGATAN! Apakah kamu yakin ingin menghapus turnamen ini? Semua pendaftar akan hilang permanen!');">
+                                <i class="fas fa-trash-alt me-1"></i> Hapus Turnamen
+                            </a>
+                        </div>
+                    </div>
+
                     <div class="text-center border-top border-secondary pt-3">
                         <a href="<?= base_url('/'); ?>" class="text-light text-decoration-none opacity-50 small">
-                            <i class="fas fa-times me-1"></i> Batal & Kembali
+                            <i class="fas fa-arrow-left me-1"></i> Batal & Kembali
                         </a>
                     </div>
                 </div>

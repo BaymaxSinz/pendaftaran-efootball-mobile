@@ -34,6 +34,7 @@ $routes->get('/turnamen/daftar/(:num)', 'Turnamen::daftar/$1');
 $routes->post('/turnamen/simpan', 'Turnamen::simpan');
 $routes->get('/tim-saya', 'Turnamen::timSaya');
 $routes->get('/turnamen/batal/(:num)', 'Turnamen::batalDaftar/$1');
+$routes->get('/turnamen/detail/(:num)', 'Turnamen::detail/$1');
 
 // ==========================================================
 // RUTE ADMIN (MENGELOLA TURNAMEN & PENDAFTAR)

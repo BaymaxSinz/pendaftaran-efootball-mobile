@@ -23,58 +23,68 @@
                             <i class="fas fa-plus-circle fa-2x text-primary"></i>
                         </div>
                         <h4 class="card-title fw-bolder text-uppercase mb-1" style="letter-spacing: 1px;">Buat <span class="text-primary">Turnamen</span></h4>
-                        <p class="text-light opacity-50 small">Tambahkan turnamen eFootball baru ke dalam sistem</p>
                     </div>
                     
-                    <form action="<?= base_url('/admin/store'); ?>" method="POST">
+                    <form action="<?= base_url('/admin/store'); ?>" method="POST" enctype="multipart/form-data">
                         <?= csrf_field(); ?>
                         
                         <div class="mb-4">
-                            <label for="name" class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Nama Turnamen</label>
+                            <label class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Nama Turnamen</label>
                             <div class="input-group shadow-sm">
                                 <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fas fa-trophy"></i></span>
-                                <input type="text" class="form-control bg-dark text-white border-secondary" id="name" name="name" placeholder="Contoh: eFootball Ramadan Cup" required>
+                                <input type="text" class="form-control bg-dark text-white border-secondary" name="name" required>
                             </div>
                         </div>
 
                         <div class="mb-4">
-                            <label for="description" class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Deskripsi / Aturan Singkat</label>
-                            <textarea class="form-control bg-dark text-white border-secondary rounded-3" id="description" name="description" rows="3" placeholder="Contoh: Kuota 32 Slot, Sistem Gugur, Hadiah Jutaan Rupiah..." required></textarea>
+                            <label class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Poster Turnamen (Opsional)</label>
+                            <input class="form-control bg-dark text-white border-secondary" type="file" name="poster" accept="image/*">
+                            <div class="form-text text-info small mt-1" style="font-size: 0.75rem;"><i class="fas fa-mobile-alt me-1"></i> Rekomendasi rasio 9:16 (Ukuran IG Story / 1080x1920).</div>
                         </div>
 
                         <div class="mb-4">
-                            <label for="rules" class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Rules & Regulation Detail</label>
+                            <label class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Total Hadiah (Prizepool)</label>
+                            <div class="input-group shadow-sm">
+                                <span class="input-group-text bg-dark border-secondary text-warning"><i class="fas fa-gift"></i></span>
+                                <input type="text" class="form-control bg-dark text-white border-secondary fw-bold text-warning" name="prize" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Deskripsi Singkat</label>
+                            <textarea class="form-control bg-dark text-white border-secondary rounded-3" name="description" rows="3" required></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Rules & Regulation Detail</label>
                             <div class="input-group shadow-sm">
                                 <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fas fa-scroll"></i></span>
-                                <textarea class="form-control bg-dark text-white border-secondary rounded-end" id="rules" name="rules" rows="4" placeholder="1. Waktu tanding malam hari.&#10;2. Dilarang menggunakan formasi custom.&#10;3. DC = Kalah..." required></textarea>
+                                <textarea class="form-control bg-dark text-white border-secondary rounded-end" name="rules" rows="4" required></textarea>
                             </div>
                         </div>
 
                         <div class="row mb-4">
                             <div class="col-6">
-                                <label for="quota" class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Total Kuota Tim</label>
+                                <label class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Total Kuota</label>
                                 <div class="input-group shadow-sm">
-                                    <span class="input-group-text bg-dark border-secondary text-warning"><i class="fas fa-layer-group"></i></span>
-                                    <input type="number" id="quota" name="quota" class="form-control bg-dark text-white border-secondary" value="32" min="2" required>
+                                    <span class="input-group-text bg-dark border-secondary text-info"><i class="fas fa-layer-group"></i></span>
+                                    <input type="number" name="quota" class="form-control bg-dark text-white border-secondary" value="32" min="2" required>
                                 </div>
-                                <div class="form-text text-info small mt-1" style="font-size: 0.7rem;">Misal: Max 32 Tim bertanding.</div>
                             </div>
-
                             <div class="col-6">
-                                <label for="max_slots" class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Slot / Akun</label>
+                                <label class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Slot / Akun</label>
                                 <div class="input-group shadow-sm">
                                     <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fas fa-users-cog"></i></span>
-                                    <input type="number" id="max_slots" name="max_slots" class="form-control bg-dark text-white border-secondary" value="1" min="1" required>
+                                    <input type="number" name="max_slots" class="form-control bg-dark text-white border-secondary" value="1" min="1" required>
                                 </div>
-                                <div class="form-text text-info small mt-1" style="font-size: 0.7rem;">Berapa tim per 1 user.</div>
                             </div>
                         </div>
 
                         <div class="mb-5">
-                            <label for="status" class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Status Pendaftaran</label>
+                            <label class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Status</label>
                             <div class="input-group shadow-sm">
                                 <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fas fa-door-open"></i></span>
-                                <select class="form-select bg-dark text-white border-secondary fw-bold" id="status" name="status" required>
+                                <select name="status" class="form-select bg-dark text-white border-secondary fw-bold" required>
                                     <option value="open" class="text-success" selected>DIBUKA (Open)</option>
                                     <option value="ongoing" class="text-warning">BERJALAN (Ongoing)</option>
                                     <option value="completed" class="text-danger">SELESAI (Completed)</option>
@@ -89,10 +99,9 @@
 
                     <div class="text-center border-top border-secondary pt-3">
                         <a href="<?= base_url('/'); ?>" class="text-light text-decoration-none opacity-50 small">
-                            <i class="fas fa-arrow-left me-1"></i> Batal & Kembali ke Beranda
+                            <i class="fas fa-arrow-left me-1"></i> Batal & Kembali
                         </a>
                     </div>
-                    
                 </div>
             </div>
             

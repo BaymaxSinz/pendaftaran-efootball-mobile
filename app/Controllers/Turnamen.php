@@ -7,6 +7,36 @@ use App\Models\TeamModel;
 
 class Turnamen extends BaseController
 {
+
+    public function detail($id)
+    {
+        $tournamentModel = new \App\Models\TournamentModel();
+        $teamModel = new \App\Models\TeamModel();
+
+        // Cari data turnamen
+        $data['turnamen'] = $tournamentModel->find($id);
+        
+        if (!$data['turnamen']) {
+            return redirect()->to('/')->with('error', 'Turnamen tidak ditemukan.');
+        }
+
+        // Hitung slot terisi (hanya yang disetujui)
+        $data['approved_teams_count'] = $teamModel->where('tournament_id', $id)
+                                                  ->where('status', 'approved')
+                                                  ->countAllResults();
+
+        // Ambil daftar tim yang sudah disetujui untuk ditampilkan di Tab Peserta
+        $db = \Config\Database::connect();
+        $builder = $db->table('teams');
+        $builder->select('teams.team_name, users.name as manager_name');
+        $builder->join('users', 'users.id = teams.user_id');
+        $builder->where('teams.tournament_id', $id);
+        $builder->where('teams.status', 'approved');
+        $data['peserta'] = $builder->get()->getResultArray();
+
+        return view('turnamen/detail', $data);
+    }
+
     public function daftar($id)
     {
         if (!session()->get('logged_in')) {
