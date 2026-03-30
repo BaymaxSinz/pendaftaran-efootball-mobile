@@ -4,122 +4,134 @@ namespace App\Controllers;
 
 use App\Models\TournamentModel;
 use App\Models\TeamModel;
-use App\Controllers\BaseController;
-use CodeIgniter\HTTP\ResponseInterface;
 
 class Admin extends BaseController
 {
+    // Karena dashboard admin sudah menyatu dengan Home, kita alihkan ke Home (/)
     public function index()
     {
-        // Menampilkan halaman form tambah turnamen
-        return view('admin/create_tournament');
-    }
-
-    public function store()
-    {
-        
-        //panggil model tournament 
-        $tournamentModel = new TournamentModel();
-
-
-        // ambil data yang diketik admin di formulir
-        $data = [
-            'name' => $this->request->getPost('name'),
-            'description' => $this->request->getPost('description'),
-            'status'      => $this->request->getPost('status'),
-            'max_slots'   => $this->request->getPost('max_slots'),
-            'quota'       => $this->request->getPost('quota'),
-            'rules'       => $this->request->getPost('rules')
-        ];
-
-
-        // simpan ke database
-        $tournamentModel->save($data);
-
-
-        // kembalikan ke view home
         return redirect()->to('/');
     }
 
-    public function teams($tournament_id)
+    // Menampilkan Form Tambah Turnamen
+    public function create()
     {
+        if (session()->get('user_role') !== 'admin') return redirect()->to('/');
+        return view('admin/create_tournament');
+    }
+
+    // Memproses Simpan Turnamen Baru
+    public function store()
+    {
+        $quota = $this->request->getPost('quota');
+        $max_slots = $this->request->getPost('max_slots');
+
+        // LOGIKA PENCEGAH ERROR: Slot/Akun tidak boleh lebih besar dari Kuota Total
+        if ($max_slots > $quota) {
+            return redirect()->back()->with('error', 'Gagal: Batas Slot/Akun tidak boleh melebihi Total Kuota Turnamen!');
+        }
+
         $tournamentModel = new TournamentModel();
-        $teamModel       = new TeamModel();
-
-        $data['turnamen'] = $tournamentModel->find($tournament_id);
+        $data = [
+            'name'        => $this->request->getPost('name'),
+            'description' => $this->request->getPost('description'),
+            'rules'       => $this->request->getPost('rules'),
+            'quota'       => $quota,
+            'max_slots'   => $max_slots,
+            'status'      => $this->request->getPost('status')
+        ];
         
-        // Hapus users.whatsapp dari baris select ini
-        $data['teams'] = $teamModel->select('teams.*, users.name as player_name')
-                                   ->join('users', 'users.id = teams.user_id')
-                                   ->where('tournament_id', $tournament_id)
-                                   ->findAll();
-
-        return view('admin/teams', $data);
+        $tournamentModel->save($data);
+        
+        // Redirect kembali ke Home setelah berhasil save
+        return redirect()->to('/')->with('success', 'Turnamen berhasil dibuat!');
     }
 
-    public function updateStatus($team_id, $status)
-    {
-        $teamModel = new TeamModel();
-        
-        // Ubah status tim menjadi 'approved' atau 'rejected'
-        $teamModel->update($team_id, ['status' => $status]);
-        
-        session()->setFlashdata('success', 'Status tim berhasil diperbarui!');
-        return redirect()->back(); // Kembalikan ke halaman sebelumnya
-    }
-
-    public function updateTournamentStatus($id)
-    {
-        $tournamentModel = new TournamentModel();
-        
-        // Ambil status baru yang dipilih admin dari dropdown
-        $status_baru = $this->request->getPost('status');
-        
-        // Update tabel turnamen
-        $tournamentModel->update($id, ['status' => $status_baru]);
-        
-        session()->setFlashdata('success', 'Status turnamen berhasil diubah!');
-        return redirect()->back();
-    }
-
+    // Menampilkan Form Edit Turnamen
     public function edit($id)
     {
+        if (session()->get('user_role') !== 'admin') return redirect()->to('/');
+        
         $tournamentModel = new TournamentModel();
         $data['turnamen'] = $tournamentModel->find($id);
         
         return view('admin/edit_tournament', $data);
     }
 
+    // Memproses Update Turnamen
     public function update($id)
     {
+        $quota = $this->request->getPost('quota');
+        $max_slots = $this->request->getPost('max_slots');
+
+        // LOGIKA PENCEGAH ERROR
+        if ($max_slots > $quota) {
+            return redirect()->back()->with('error', 'Gagal: Batas Slot/Akun tidak boleh melebihi Total Kuota Turnamen!');
+        }
+
         $tournamentModel = new TournamentModel();
-        
         $data = [
             'name'        => $this->request->getPost('name'),
             'description' => $this->request->getPost('description'),
-            'status'      => $this->request->getPost('status'),
-            'max_slots'   => $this->request->getPost('max_slots'),
-            'quota'   => $this->request->getPost('quota'),
-            'rules' => $this->request->getPost('rules'),
+            'rules'       => $this->request->getPost('rules'),
+            'quota'       => $quota,
+            'max_slots'   => $max_slots,
+            'status'      => $this->request->getPost('status')
         ];
-
+        
         $tournamentModel->update($id, $data);
         
-        session()->setFlashdata('success', 'Turnamen berhasil diperbarui!');
-        return redirect()->to('/');
+        // Redirect kembali ke Home setelah berhasil update
+        return redirect()->to('/')->with('success', 'Turnamen berhasil diperbarui!');
     }
 
+    // Menghapus Turnamen
     public function delete($id)
     {
+        if (session()->get('user_role') !== 'admin') return redirect()->to('/');
+        
         $tournamentModel = new TournamentModel();
-        
-        // Opsional: Hapus juga tim yang terdaftar di turnamen ini agar database bersih
-        $teamModel = new \App\Models\TeamModel();
-        $teamModel->where('tournament_id', $id)->delete();
-        
         $tournamentModel->delete($id);
         
-        session()->setFlashdata('success', 'Turnamen berhasil dihapus!');
-        return redirect()->to('/');
+        return redirect()->to('/')->with('success', 'Turnamen berhasil dihapus!');
+    }
+
+    // ==========================================================
+    // FITUR KELOLA PENDAFTAR (TIM)
+    // ==========================================================
+
+    // Menampilkan daftar tim yang mendaftar di suatu turnamen
+    public function teams($id)
+    {
+        if (session()->get('user_role') !== 'admin') return redirect()->to('/');
+
+        $tournamentModel = new TournamentModel();
+        $data['turnamen'] = $tournamentModel->find($id);
+
+        // Mengambil data tim beserta nama user yang mendaftarkan
+        $db = \Config\Database::connect();
+        $builder = $db->table('teams');
+        $builder->select('teams.*, users.name as player_name');
+        $builder->join('users', 'users.id = teams.user_id');
+        $builder->where('teams.tournament_id', $id);
+        $data['teams'] = $builder->get()->getResultArray();
+
+        return view('admin/teams', $data);
+    }
+
+    // Mengubah status tim (Approve / Reject)
+    public function updateTeamStatus($id, $status)
+    {
+        if (session()->get('user_role') !== 'admin') return redirect()->to('/');
+
+        $teamModel = new TeamModel();
+        
+        // Hanya izinkan status 'approved', 'rejected', atau 'pending'
+        if (in_array($status, ['approved', 'rejected', 'pending'])) {
+            $teamModel->update($id, ['status' => $status]);
+            return redirect()->back()->with('success', 'Status pendaftar berhasil diperbarui!');
+        }
+
+        return redirect()->back()->with('error', 'Status tidak valid!');
     }
 }

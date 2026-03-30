@@ -2,23 +2,34 @@
 
 namespace App\Controllers;
 
-// Panggil Model yang akan kita gunakan
 use App\Models\TournamentModel;
+use App\Models\TeamModel;
 
 class Home extends BaseController
 {
     public function index()
     {
-        // 1. Inisiasi Model
         $tournamentModel = new TournamentModel();
+        $teamModel = new TeamModel();
 
-        // 2. Ambil semua data turnamen dari database
-        // dan simpan ke dalam variabel (array) bernama $data
+        // Ambil semua data turnamen
+        $tournaments = $tournamentModel->findAll();
+
+        // Hitung jumlah tim untuk masing-masing turnamen
+        foreach ($tournaments as &$t) {
+            // Menghitung total pendaftar (semua status)
+            $t['registered_teams'] = $teamModel->where('tournament_id', $t['id'])->countAllResults();
+            
+            // Menghitung HANYA tim yang sudah DISETUJUI (Approved)
+            $t['approved_teams'] = $teamModel->where('tournament_id', $t['id'])
+                                             ->where('status', 'approved')
+                                             ->countAllResults();
+        }
+
         $data = [
-            'tournaments' => $tournamentModel->findAll()
+            'turnamen' => $tournaments
         ];
 
-        // 3. Kirim $data tersebut ke tampilan (View) bernama 'home'
         return view('home', $data);
     }
 }

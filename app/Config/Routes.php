@@ -5,38 +5,51 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
+
+// ==========================================================
+// RUTE HALAMAN UTAMA
+// ==========================================================
 $routes->get('/', 'Home::index');
 
-
-// admin
-$routes->get('/admin', 'Admin::index', ['filter' => 'admincheck']);
-$routes->post('/admin/store', 'Admin::store', ['filter' => 'admincheck']);
-$routes->post('/admin/turnamen/update-status/(:num)', 'Admin::updateTournamentStatus/$1', ['filter' => 'admincheck']);
-$routes->get('/admin/turnamen/(:num)/tim', 'Admin::teams/$1', ['filter' => 'admincheck']);
-$routes->get('/admin/tim/status/(:num)/(:segment)', 'Admin::updateStatus/$1/$2', ['filter' => 'admincheck']);
-// Rute Edit & Hapus Turnamen (Admin)
-$routes->get('/admin/edit/(:num)', 'Admin::edit/$1', ['filter' => 'admincheck']);
-$routes->post('/admin/update/(:num)', 'Admin::update/$1', ['filter' => 'admincheck']);
-$routes->get('/admin/delete/(:num)', 'Admin::delete/$1', ['filter' => 'admincheck']);
-
-// Rute untuk Registrasi & Login
-$routes->get('/register', 'Auth::register');
-$routes->post('/register/process', 'Auth::processRegister');
-
+// ==========================================================
+// RUTE OTENTIKASI (LOGIN & REGISTER)
+// ==========================================================
 $routes->get('/login', 'Auth::login');
 $routes->post('/login/process', 'Auth::processLogin');
+$routes->get('/register', 'Auth::register');
+$routes->post('/register/process', 'Auth::processRegister');
 $routes->get('/logout', 'Auth::logout');
 
-
-// Rute Pendaftaran Turnamen oleh Pemain
-$routes->get('/turnamen/daftar/(:num)', 'Turnamen::daftar/$1');
-$routes->post('/turnamen/simpan', 'Turnamen::simpan');
-$routes->get('/turnamen/bagan/(:num)', 'Turnamen::bagan/$1');
-$routes->get('/tim-saya', 'Turnamen::timSaya');
-$routes->get('/tim-saya/batal/(:num)', 'Turnamen::batalDaftar/$1');
-
-// Rute Profil Pemain
+// ==========================================================
+// RUTE PROFIL PEMAIN
+// ==========================================================
 $routes->get('/profil', 'Profil::index');
 $routes->post('/profil/update', 'Profil::updateProfil');
 $routes->post('/profil/password', 'Profil::updatePassword');
 
+// ==========================================================
+// RUTE TURNAMEN (UNTUK PEMAIN)
+// ==========================================================
+$routes->get('/turnamen/daftar/(:num)', 'Turnamen::daftar/$1');
+$routes->post('/turnamen/simpan', 'Turnamen::simpan');
+$routes->get('/tim-saya', 'Turnamen::timSaya');
+$routes->get('/turnamen/batal/(:num)', 'Turnamen::batalDaftar/$1');
+
+// ==========================================================
+// RUTE ADMIN (MENGELOLA TURNAMEN & PENDAFTAR)
+// ==========================================================
+$routes->group('admin', function($routes) {
+    // Dashboard Admin (Opsional, karena sekarang tombol kelola ada di Home)
+    $routes->get('/', 'Admin::index');
+    
+    // Rute CRUD Turnamen
+    $routes->get('create', 'Admin::create');               // Menampilkan form tambah
+    $routes->post('store', 'Admin::store');                // Memproses data tambah
+    $routes->get('edit/(:num)', 'Admin::edit/$1');         // Menampilkan form edit
+    $routes->post('update/(:num)', 'Admin::update/$1');    // Memproses data edit
+    $routes->get('delete/(:num)', 'Admin::delete/$1');     // Menghapus turnamen
+    
+    // Rute Kelola Pendaftar (Tim)
+    $routes->get('tim/(:num)', 'Admin::teams/$1');                               // Melihat daftar tim di suatu turnamen
+    $routes->get('tim/status/(:num)/(:segment)', 'Admin::updateTeamStatus/$1/$2'); // Mengubah status (Approve/Reject)
+});

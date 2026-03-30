@@ -5,6 +5,14 @@
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
 
+            <?php if(session()->getFlashdata('error')): ?>
+                <div class="alert bg-danger text-white alert-dismissible fade show py-3 border-0 shadow-sm rounded-4 mb-4" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2 fs-5 align-middle"></i> 
+                    <span class="align-middle fw-bold"><?= session()->getFlashdata('error'); ?></span>
+                    <button type="button" class="btn-close btn-close-white px-2 py-3" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
             <div class="card bg-black text-white border-0 shadow-lg rounded-4 overflow-hidden">
                 <div class="bg-gradient bg-primary" style="height: 4px; width: 100%;"></div>
                 
@@ -47,7 +55,7 @@
                                 <label for="quota" class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Total Kuota Tim</label>
                                 <div class="input-group shadow-sm">
                                     <span class="input-group-text bg-dark border-secondary text-warning"><i class="fas fa-layer-group"></i></span>
-                                    <input type="number" id="quota" name="quota" class="form-control bg-dark text-white border-secondary" value="1" min="2" required>
+                                    <input type="number" id="quota" name="quota" class="form-control bg-dark text-white border-secondary" value="32" min="2" required>
                                 </div>
                                 <div class="form-text text-info small mt-1" style="font-size: 0.7rem;">Misal: Max 32 Tim bertanding.</div>
                             </div>

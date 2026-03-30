@@ -5,6 +5,14 @@
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
 
+            <?php if(session()->getFlashdata('error')): ?>
+                <div class="alert bg-danger text-white alert-dismissible fade show py-3 border-0 shadow-sm rounded-4 mb-4" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2 fs-5 align-middle"></i> 
+                    <span class="align-middle fw-bold"><?= session()->getFlashdata('error'); ?></span>
+                    <button type="button" class="btn-close btn-close-white px-2 py-3" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
             <div class="card bg-black text-white border-0 shadow-lg rounded-4 overflow-hidden">
                 <div class="bg-gradient bg-warning" style="height: 4px; width: 100%;"></div>
                 
