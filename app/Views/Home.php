@@ -120,12 +120,17 @@
 
                         <?php if(session()->get('user_role') == 'admin'): ?>
                             <div class="mt-3 pt-3 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center position-relative" style="z-index: 3;">
-                                <span class="text-danger opacity-75 fw-bold" style="font-size: 0.65rem; letter-spacing: 1px;"><i class="fas fa-shield-alt me-1"></i> ADMIN</span>
-                                <div class="d-flex gap-3">
-                                    <a href="<?= base_url('/admin/edit/' . $t['id']); ?>" class="text-warning text-decoration-none fw-bold" style="font-size: 0.75rem;"><i class="fas fa-edit me-1"></i> Edit</a>
-                                    <a href="<?= base_url('/admin/tim/' . $t['id']); ?>" class="text-info text-decoration-none fw-bold" style="font-size: 0.75rem;"><i class="fas fa-users-cog me-1"></i> Kelola</a>
-                                </div>
-                            </div>
+    <span class="text-danger opacity-75 fw-bold" style="font-size: 0.65rem; letter-spacing: 1px;"><i class="fas fa-shield-alt me-1"></i> ADMIN</span>
+    <div class="d-flex gap-2 flex-wrap justify-content-end">
+        
+        <?php if($t['status'] == 'ongoing'): ?>
+            <a href="<?= base_url('/admin/matches/' . $t['id']); ?>" class="btn btn-sm btn-success bg-gradient fw-bold rounded-3 shadow-sm" style="font-size: 0.7rem;"><i class="fas fa-keyboard me-1"></i> Skor</a>
+        <?php endif; ?>
+
+        <a href="<?= base_url('/admin/edit/' . $t['id']); ?>" class="btn btn-sm btn-dark border-warning text-warning fw-bold rounded-3 shadow-sm" style="font-size: 0.7rem;"><i class="fas fa-edit"></i> Edit</a>
+        <a href="<?= base_url('/admin/tim/' . $t['id']); ?>" class="btn btn-sm btn-dark border-info text-info fw-bold rounded-3 shadow-sm" style="font-size: 0.7rem;"><i class="fas fa-users-cog"></i> Tim</a>
+    </div>
+</div>
                         <?php endif; ?>
 
                     </div>

@@ -33,13 +33,16 @@
             <div class="card-header bg-dark border-secondary p-0">
                 <ul class="nav nav-tabs nav-fill border-0 flex-nowrap overflow-x-auto hide-scrollbar" id="tournamentTab" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link w-100 active fw-bold text-uppercase py-3 rounded-0 fs-mobile" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" style="letter-spacing: 0.5px;"><i class="fas fa-info-circle me-1"></i> Info</button>
+                        <button class="nav-link active fw-bold text-uppercase py-3 rounded-0 fs-mobile" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" style="letter-spacing: 0.5px;"><i class="fas fa-info-circle me-1"></i> Info</button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link w-100 fw-bold text-uppercase py-3 rounded-0 text-light opacity-75 fs-mobile" id="rules-tab" data-bs-toggle="tab" data-bs-target="#rules" type="button" role="tab" style="letter-spacing: 0.5px;"><i class="fas fa-scroll me-1"></i> Rules</button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link w-100 fw-bold text-uppercase py-3 rounded-0 text-light opacity-75 fs-mobile" id="peserta-tab" data-bs-toggle="tab" data-bs-target="#peserta" type="button" role="tab" style="letter-spacing: 0.5px;"><i class="fas fa-users me-1"></i> Peserta</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link w-100 fw-bold text-uppercase py-3 rounded-0 text-warning opacity-75 fs-mobile" id="bagan-tab" data-bs-toggle="tab" data-bs-target="#bagan" type="button" role="tab" style="letter-spacing: 0.5px;"><i class="fas fa-sitemap me-1"></i> Bagan</button>
                     </li>
                 </ul>
             </div>
@@ -99,7 +102,76 @@
                     <?php endif; ?>
                 </div>
 
-            </div>
+                <div class="tab-pane fade" id="bagan" role="tabpanel">
+                    
+                    <?php if($t['status'] == 'completed' && !empty($champion)): ?>
+                        <div class="bg-dark bg-gradient border border-warning border-opacity-75 rounded-4 p-4 text-center mb-4 shadow-lg position-relative overflow-hidden">
+                            <div class="position-absolute top-0 start-0 w-100 h-100" style="background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px); background-size: 20px 20px; opacity: 0.5;"></div>
+                            
+                            <i class="fas fa-trophy fa-3x text-warning mb-2 position-relative z-1" style="filter: drop-shadow(0 0 10px rgba(255,193,7,0.8));"></i>
+                            <h6 class="text-warning fw-bold text-uppercase mb-1 position-relative z-1" style="letter-spacing: 2px;">CHAMPION</h6>
+                            <h2 class="fw-black text-white text-uppercase mb-1 position-relative z-1"><?= esc($champion['team_name']); ?></h2>
+                            <span class="badge bg-black border border-secondary text-light opacity-75 rounded-pill position-relative z-1"><i class="fas fa-user-tie me-1"></i> <?= esc($champion['manager_name']); ?></span>
+                        </div>
+                    <?php endif; ?>
+
+                    <h5 class="fw-bold text-warning mb-4 border-start border-3 border-warning ps-2">Jadwal & Hasil Pertandingan</h5>
+                    
+                    <?php if(empty($matches)): ?>
+                        <div class="text-center py-5 bg-dark rounded-3 border border-secondary">
+                            <i class="fas fa-sitemap fa-3x text-secondary opacity-50 mb-3"></i>
+                            <h6 class="text-light fw-bold">Bagan Belum Tersedia</h6>
+                            <p class="text-light opacity-50 mb-0 small">Admin belum menutup pendaftaran dan mengacak bagan.</p>
+                        </div>
+                    <?php else: ?>
+                        
+                        <?php 
+                            $current_round = 0;
+                            foreach($matches as $m): 
+                                // Membuat Pembatas (Header) untuk setiap Babak baru
+                                if ($m['round'] != $current_round): 
+                                    $current_round = $m['round'];
+                        ?>
+                                    <div class="bg-secondary bg-opacity-25 py-2 px-3 rounded-pill mb-3 <?= $current_round > 1 ? 'mt-5' : 'mt-2'; ?> border border-secondary border-opacity-50 text-center">
+                                        <h6 class="fw-bold text-warning mb-0 text-uppercase" style="letter-spacing: 1px;"><i class="fas fa-trophy me-2"></i> BABAK <?= $current_round; ?></h6>
+                                    </div>
+                        <?php endif; ?>
+                            
+                            <div class="card bg-dark border-secondary shadow-sm mb-3 rounded-4 overflow-hidden">
+                                <div class="card-body p-0 d-flex align-items-stretch">
+                                    
+                                    <div class="flex-grow-1 p-3 text-center d-flex align-items-center justify-content-center <?= $m['winner_id'] == $m['team1_id'] ? 'bg-success bg-opacity-10' : ''; ?>" style="width: 40%;">
+                                        <h6 class="fw-bold mb-0 text-white text-truncate w-100 px-2"><?= esc($m['team1_name']); ?></h6>
+                                    </div>
+                                    
+                                    <div class="bg-black px-2 py-3 text-center border-start border-end border-secondary d-flex flex-column justify-content-center align-items-center" style="width: 20%; min-width: 80px;">
+                                        <?php if($m['status'] == 'completed' && !empty($m['team2_id'])): ?>
+                                            <span class="fw-black text-warning fs-5"><?= $m['score_team1']; ?> - <?= $m['score_team2']; ?></span>
+                                            <span class="badge bg-secondary opacity-50 mt-1" style="font-size: 0.6rem;">SELESAI</span>
+                                        <?php elseif(empty($m['team2_id'])): ?>
+                                            <span class="fw-black text-info" style="font-size: 0.75rem;">LOLOS</span>
+                                            <span class="badge bg-secondary opacity-50 mt-1" style="font-size: 0.6rem;">OTOMATIS</span>
+                                        <?php else: ?>
+                                            <span class="fw-black text-secondary opacity-50">VS</span>
+                                            <span class="badge bg-warning text-dark mt-1" style="font-size: 0.6rem;">MENUNGGU</span>
+                                        <?php endif; ?>
+                                    </div>
+                                    
+                                    <div class="flex-grow-1 p-3 text-center d-flex align-items-center justify-content-center <?= $m['winner_id'] == $m['team2_id'] ? 'bg-success bg-opacity-10' : ''; ?>" style="width: 40%;">
+                                        <?php if(empty($m['team2_id'])): ?>
+                                            <h6 class="fw-bold mb-0 text-secondary opacity-50 fst-italic">BYE (Lolos)</h6>
+                                        <?php else: ?>
+                                            <h6 class="fw-bold mb-0 text-white text-truncate w-100 px-2"><?= esc($m['team2_name']); ?></h6>
+                                        <?php endif; ?>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+                </div>
         </div>
     </div>
 

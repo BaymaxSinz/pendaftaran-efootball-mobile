@@ -12,6 +12,7 @@ class Turnamen extends BaseController
     {
         $tournamentModel = new \App\Models\TournamentModel();
         $teamModel = new \App\Models\TeamModel();
+        $matchModel = new \App\Models\MatchModel();
 
         // Cari data turnamen
         $data['turnamen'] = $tournamentModel->find($id);
@@ -33,6 +34,30 @@ class Turnamen extends BaseController
         $builder->where('teams.tournament_id', $id);
         $builder->where('teams.status', 'approved');
         $data['peserta'] = $builder->get()->getResultArray();
+
+        // --- AMBIL DATA BAGAN PERTANDINGAN ---
+        $data['matches'] = $matchModel->select('matches.*, t1.team_name as team1_name, t2.team_name as team2_name')
+                                      ->join('teams as t1', 't1.id = matches.team1_id', 'left')
+                                      ->join('teams as t2', 't2.id = matches.team2_id', 'left')
+                                      ->where('matches.tournament_id', $id)
+                                      ->orderBy('matches.round', 'ASC') 
+                                      ->orderBy('matches.match_number', 'ASC')
+                                      ->findAll();
+
+        // --- CARI SANG JUARA UNTUK DITAMPILKAN DI PUBLIK ---
+        $data['champion'] = null;
+        if ($data['turnamen']['status'] == 'completed') {
+            $lastMatch = $matchModel->where('tournament_id', $id)
+                                    ->orderBy('round', 'DESC')
+                                    ->orderBy('match_number', 'DESC')
+                                    ->first();
+            
+            if ($lastMatch && $lastMatch['winner_id']) {
+                $data['champion'] = $teamModel->select('teams.team_name, users.name as manager_name')
+                                              ->join('users', 'users.id = teams.user_id')
+                                              ->find($lastMatch['winner_id']);
+            }
+        }
 
         return view('turnamen/detail', $data);
     }
@@ -59,18 +84,14 @@ class Turnamen extends BaseController
 
         $tournament = $tournamentModel->find($tournamentId);
 
-        // ---------------------------------------------------------
-        // SATPAM 1: CEK TOTAL KUOTA TURNAMEN (Misal: Max 32 Tim)
-        // ---------------------------------------------------------
+        // SATPAM 1: CEK TOTAL KUOTA TURNAMEN
         $currentTeams = $teamModel->where('tournament_id', $tournamentId)->countAllResults();
         
         if ($currentTeams >= $tournament['quota']) {
             return redirect()->back()->with('error', 'Mohon maaf, kuota pendaftaran turnamen ini sudah penuh (' . $tournament['quota'] . '/' . $tournament['quota'] . ' Tim).');
         }
 
-        // ---------------------------------------------------------
         // SATPAM 2: CEK BATAS SLOT PER AKUN
-        // ---------------------------------------------------------
         $myTeamsCount = $teamModel->where('tournament_id', $tournamentId)
                                   ->where('user_id', $userId)
                                   ->countAllResults();
@@ -105,7 +126,9 @@ class Turnamen extends BaseController
         // Mengambil data tim dan nama turnamennya menggunakan Query Builder
         $db      = \Config\Database::connect();
         $builder = $db->table('teams');
-        $builder->select('teams.*, tournaments.name as turnamen_name');
+        
+        // PERBAIKAN DI SINI: Menambahkan tournaments.status as turnamen_status
+        $builder->select('teams.*, tournaments.name as turnamen_name, tournaments.status as turnamen_status');
         $builder->join('tournaments', 'tournaments.id = teams.tournament_id');
         $builder->where('teams.user_id', $userId);
         $query   = $builder->get();
@@ -130,12 +153,29 @@ class Turnamen extends BaseController
         return view('turnamen/bagan', $data);
     }
 
-    public function batalDaftar($id)
+    public function batal($team_id)
     {
-        $teamModel = new TeamModel();
-        $teamModel->delete($id);
-        
-        return redirect()->to('/tim-saya')->with('success', 'Pendaftaran tim berhasil dibatalkan.');
+        $teamModel = new \App\Models\TeamModel();
+        $tournamentModel = new \App\Models\TournamentModel();
+
+        // 1. Cari data tim yang mau dihapus
+        $team = $teamModel->find($team_id);
+        if (!$team) {
+            return redirect()->back()->with('error', 'Tim tidak ditemukan.');
+        }
+
+        // 2. Cari data turnamennya
+        $tournament = $tournamentModel->find($team['tournament_id']);
+
+        // 3. PENGAMANAN UTAMA: Cek status turnamen
+        if ($tournament['status'] != 'open') {
+            return redirect()->back()->with('error', 'Gagal: Turnamen sudah dimulai atau selesai. Kamu tidak bisa membatalkan pendaftaran!');
+        }
+
+        // 4. Jika masih 'open', baru boleh dihapus
+        $teamModel->delete($team_id);
+
+        return redirect()->back()->with('success', 'Pendaftaran berhasil dibatalkan.');
     }
 
 }

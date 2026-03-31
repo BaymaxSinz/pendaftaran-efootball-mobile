@@ -33,8 +33,10 @@ $routes->post('/profil/password', 'Profil::updatePassword');
 $routes->get('/turnamen/daftar/(:num)', 'Turnamen::daftar/$1');
 $routes->post('/turnamen/simpan', 'Turnamen::simpan');
 $routes->get('/tim-saya', 'Turnamen::timSaya');
-$routes->get('/turnamen/batal/(:num)', 'Turnamen::batalDaftar/$1');
 $routes->get('/turnamen/detail/(:num)', 'Turnamen::detail/$1');
+
+// INI DIA RUTE BATAL YANG BENAR (DI LUAR GRUP ADMIN)
+$routes->get('/user/batal/(:num)', 'Turnamen::batal/$1');
 
 // ==========================================================
 // RUTE ADMIN (MENGELOLA TURNAMEN & PENDAFTAR)
@@ -42,6 +44,9 @@ $routes->get('/turnamen/detail/(:num)', 'Turnamen::detail/$1');
 $routes->group('admin', function($routes) {
     // Dashboard Admin (Opsional, karena sekarang tombol kelola ada di Home)
     $routes->get('/', 'Admin::index');
+    
+    // Rute Generate Bagan
+    $routes->get('generate-bracket/(:num)', 'Admin::generateBracket/$1');
     
     // Rute CRUD Turnamen
     $routes->get('create', 'Admin::create');               // Menampilkan form tambah
@@ -53,4 +58,9 @@ $routes->group('admin', function($routes) {
     // Rute Kelola Pendaftar (Tim)
     $routes->get('tim/(:num)', 'Admin::teams/$1');                               // Melihat daftar tim di suatu turnamen
     $routes->get('tim/status/(:num)/(:segment)', 'Admin::updateTeamStatus/$1/$2'); // Mengubah status (Approve/Reject)
+
+    // Kelola Pertandingan & Skor
+    $routes->get('matches/(:num)', 'Admin::matches/$1');
+    $routes->post('update-score/(:num)', 'Admin::updateScore/$1');
+    $routes->get('generate-next-round/(:num)/(:num)', 'Admin::generateNextRound/$1/$2');
 });
