@@ -30,6 +30,6 @@ class Home extends BaseController
             'turnamen' => $tournaments
         ];
 
-        return view('home', $data);
+        return view('Home', $data);
     }
 }
