@@ -42,7 +42,7 @@
                         <button class="nav-link w-100 fw-bold text-uppercase py-3 rounded-0 text-light opacity-75 fs-mobile" id="peserta-tab" data-bs-toggle="tab" data-bs-target="#peserta" type="button" role="tab" style="letter-spacing: 0.5px;"><i class="fas fa-users me-1"></i> Peserta</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link w-100 fw-bold text-uppercase py-3 rounded-0 text-warning opacity-75 fs-mobile" id="bagan-tab" data-bs-toggle="tab" data-bs-target="#bagan" type="button" role="tab" style="letter-spacing: 0.5px;"><i class="fas fa-sitemap me-1"></i> Bagan</button>
+                        <button class="nav-link w-100 fw-bold text-uppercase py-3 rounded-0 text-warning opacity-75 fs-mobile" id="bagan-tab" data-bs-toggle="tab" data-bs-target="#bagan" type="button" role="tab" style="letter-spacing: 0.5px;"><i class="fas fa-sitemap me-1"></i> Bagan / Jadwal</button>
                     </li>
                 </ul>
             </div>
@@ -105,7 +105,7 @@
                 <div class="tab-pane fade" id="bagan" role="tabpanel">
                     
                     <?php if($t['status'] == 'completed' && !empty($champion)): ?>
-                        <div class="bg-dark bg-gradient border border-warning border-opacity-75 rounded-4 p-4 text-center mb-4 shadow-lg position-relative overflow-hidden">
+                        <div class="bg-dark bg-gradient border border-warning border-opacity-75 rounded-4 p-4 text-center mb-5 shadow-lg position-relative overflow-hidden">
                             <div class="position-absolute top-0 start-0 w-100 h-100" style="background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px); background-size: 20px 20px; opacity: 0.5;"></div>
                             
                             <i class="fas fa-trophy fa-3x text-warning mb-2 position-relative z-1" style="filter: drop-shadow(0 0 10px rgba(255,193,7,0.8));"></i>
@@ -115,25 +115,60 @@
                         </div>
                     <?php endif; ?>
 
+                    <?php if(isset($t['format']) && $t['format'] == 'league' && !empty($standings)): ?>
+                        <h5 class="fw-bold text-success mb-3 border-start border-3 border-success ps-2">Klasemen <?= $t['status'] == 'completed' ? 'Akhir' : 'Sementara' ?></h5>
+                        <div class="table-responsive mb-5 border border-secondary rounded-4 shadow-sm">
+                            <table class="table table-dark table-striped table-hover mb-0" style="font-size: 0.9rem;">
+                                <thead class="bg-primary text-white">
+                                    <tr>
+                                        <th class="text-center py-3">#</th>
+                                        <th class="py-3">TIM</th>
+                                        <th class="text-center py-3" title="Main">P</th>
+                                        <th class="text-center py-3" title="Menang">W</th>
+                                        <th class="text-center py-3" title="Seri">D</th>
+                                        <th class="text-center py-3" title="Kalah">L</th>
+                                        <th class="text-center py-3" title="Selisih Gol">GD</th>
+                                        <th class="text-center text-warning py-3">PTS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach($standings as $index => $s): ?>
+                                    <tr class="<?= $index == 0 ? 'border-warning border-2' : '' ?>">
+                                        <td class="text-center fw-bold align-middle"><?= $index + 1 ?></td>
+                                        <td class="fw-bold align-middle <?= $index == 0 ? 'text-warning' : '' ?>"><?= esc($s['name']) ?></td>
+                                        <td class="text-center align-middle"><?= $s['played'] ?></td>
+                                        <td class="text-center align-middle text-success"><?= $s['win'] ?></td>
+                                        <td class="text-center align-middle text-secondary"><?= $s['draw'] ?></td>
+                                        <td class="text-center align-middle text-danger"><?= $s['loss'] ?></td>
+                                        <td class="text-center align-middle"><?= ($s['gd'] > 0 ? '+'.$s['gd'] : $s['gd']) ?></td>
+                                        <td class="text-center fw-black text-warning fs-5 align-middle"><?= $s['points'] ?></td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endif; ?>
+
                     <h5 class="fw-bold text-warning mb-4 border-start border-3 border-warning ps-2">Jadwal & Hasil Pertandingan</h5>
                     
                     <?php if(empty($matches)): ?>
                         <div class="text-center py-5 bg-dark rounded-3 border border-secondary">
                             <i class="fas fa-sitemap fa-3x text-secondary opacity-50 mb-3"></i>
-                            <h6 class="text-light fw-bold">Bagan Belum Tersedia</h6>
-                            <p class="text-light opacity-50 mb-0 small">Admin belum menutup pendaftaran dan mengacak bagan.</p>
+                            <h6 class="text-light fw-bold">Jadwal Belum Tersedia</h6>
+                            <p class="text-light opacity-50 mb-0 small">Admin belum menutup pendaftaran dan menyusun jadwal.</p>
                         </div>
                     <?php else: ?>
                         
                         <?php 
                             $current_round = 0;
                             foreach($matches as $m): 
-                                // Membuat Pembatas (Header) untuk setiap Babak baru
+                                // Membuat Pembatas (Header) untuk setiap Babak / Pekan baru
                                 if ($m['round'] != $current_round): 
                                     $current_round = $m['round'];
+                                    $label_babak = (isset($t['format']) && $t['format'] == 'league') ? 'PEKAN / MATCHDAY' : 'BABAK';
                         ?>
                                     <div class="bg-secondary bg-opacity-25 py-2 px-3 rounded-pill mb-3 <?= $current_round > 1 ? 'mt-5' : 'mt-2'; ?> border border-secondary border-opacity-50 text-center">
-                                        <h6 class="fw-bold text-warning mb-0 text-uppercase" style="letter-spacing: 1px;"><i class="fas fa-trophy me-2"></i> BABAK <?= $current_round; ?></h6>
+                                        <h6 class="fw-bold text-warning mb-0 text-uppercase" style="letter-spacing: 1px;"><i class="fas fa-calendar-alt me-2"></i> <?= $label_babak ?> <?= $current_round; ?></h6>
                                     </div>
                         <?php endif; ?>
                             
@@ -171,7 +206,7 @@
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
-                </div>
+            </div>
         </div>
     </div>
 

@@ -88,6 +88,15 @@
                             </div>
                         </div>
 
+                        <div class="mb-3">
+                            <label class="form-label text-light fw-bold">Format Turnamen</label>
+                            <select name="format" class="form-select bg-dark text-white border-secondary" required>
+                                <option value="bracket">Sistem Gugur (Bracket)</option>
+                                <option value="league">Sistem Liga (Klasemen)</option>
+                            </select>
+                            <div class="form-text text-secondary">Sistem gugur = yang kalah tersingkir. Sistem liga = semua saling bertemu (ada poin & klasemen).</div>
+                        </div>
+
                         <div class="mb-5">
                             <label class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Status</label>
                             <div class="input-group shadow-sm">

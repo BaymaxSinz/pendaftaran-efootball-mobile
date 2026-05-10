@@ -92,6 +92,15 @@
                             </div>
                         </div>
 
+                        <div class="mb-3">
+                            <label class="form-label text-light fw-bold">Format Turnamen</label>
+                            <select name="format" class="form-select bg-dark text-white border-secondary" required>
+                                <option value="bracket">Sistem Gugur (Bracket)</option>
+                                <option value="league">Sistem Liga (Klasemen)</option>
+                            </select>
+                            <div class="form-text text-secondary">Sistem gugur = yang kalah tersingkir. Sistem liga = semua saling bertemu (ada poin & klasemen).</div>
+                        </div>
+
                         <button type="submit" class="btn btn-primary bg-gradient w-100 fw-bold py-3 rounded-pill shadow mb-4 text-white text-uppercase" style="letter-spacing: 1px;">
                             <i class="fas fa-paper-plane me-2"></i> Publish Turnamen
                         </button>

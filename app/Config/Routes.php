@@ -47,13 +47,14 @@ $routes->group('admin', function($routes) {
     
     // Rute Generate Bagan
     $routes->get('generate-bracket/(:num)', 'Admin::generateBracket/$1');
+    $routes->get('generate-league/(:num)', 'Admin::generateLeague/$1');
     
     // Rute CRUD Turnamen
-    $routes->get('create', 'Admin::create');               // Menampilkan form tambah
+    $routes->get('create_tournament', 'Admin::create');               // Menampilkan form tambah
     $routes->post('store', 'Admin::store');                // Memproses data tambah
     $routes->get('edit/(:num)', 'Admin::edit/$1');         // Menampilkan form edit
     $routes->post('update/(:num)', 'Admin::update/$1');    // Memproses data edit
-    $routes->get('delete/(:num)', 'Admin::delete/$1');     // Menghapus turnamen
+    $routes->get('delete/(:num)', 'Admin::delete/$1');     // Menghapus turname
     
     // Rute Kelola Pendaftar (Tim)
     $routes->get('tim/(:num)', 'Admin::teams/$1');                               // Melihat daftar tim di suatu turnamen
@@ -63,4 +64,7 @@ $routes->group('admin', function($routes) {
     $routes->get('matches/(:num)', 'Admin::matches/$1');
     $routes->post('update-score/(:num)', 'Admin::updateScore/$1');
     $routes->get('generate-next-round/(:num)/(:num)', 'Admin::generateNextRound/$1/$2');
+    $routes->get('complete-league/(:num)', 'Admin::completeLeague/$1');
 });
+
+$routes->get('/turnamen/pembayaran/(:num)', 'Turnamen::pembayaran/$1');

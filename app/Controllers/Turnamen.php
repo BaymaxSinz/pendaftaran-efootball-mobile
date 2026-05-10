@@ -44,22 +44,114 @@ class Turnamen extends BaseController
                                       ->orderBy('matches.match_number', 'ASC')
                                       ->findAll();
 
-        // --- CARI SANG JUARA UNTUK DITAMPILKAN DI PUBLIK ---
+        // =========================================================
+        // PERBAIKAN PENCARIAN JUARA & HITUNG KLASEMEN
+        // =========================================================
         $data['champion'] = null;
-        if ($data['turnamen']['status'] == 'completed') {
-            $lastMatch = $matchModel->where('tournament_id', $id)
-                                    ->orderBy('round', 'DESC')
-                                    ->orderBy('match_number', 'DESC')
-                                    ->first();
+        $data['standings'] = [];
+        
+        if ($data['turnamen']['format'] == 'league') {
+            // Jika Liga, hitung klasemen dulu untuk ditampilkan di view
+            $data['standings'] = $this->_calculateStandings($id);
             
-            if ($lastMatch && $lastMatch['winner_id']) {
+            // Jika liga sudah selesai, juara diambil dari pemuncak klasemen (Peringkat 1)
+            if ($data['turnamen']['status'] == 'completed' && !empty($data['standings'])) {
+                $topTeam = $data['standings'][0]; // [0] berarti array indeks pertama (peringkat teratas)
                 $data['champion'] = $teamModel->select('teams.team_name, users.name as manager_name')
                                               ->join('users', 'users.id = teams.user_id')
-                                              ->find($lastMatch['winner_id']);
+                                              ->find($topTeam['team_id']);
+            }
+        } else {
+            // Jika Gugur (Bracket), juara diambil dari pertandingan terakhir
+            if ($data['turnamen']['status'] == 'completed') {
+                $lastMatch = $matchModel->where('tournament_id', $id)
+                                        ->orderBy('round', 'DESC')
+                                        ->orderBy('match_number', 'DESC')
+                                        ->first();
+                
+                if ($lastMatch && $lastMatch['winner_id']) {
+                    $data['champion'] = $teamModel->select('teams.team_name, users.name as manager_name')
+                                                  ->join('users', 'users.id = teams.user_id')
+                                                  ->find($lastMatch['winner_id']);
+                }
             }
         }
 
         return view('turnamen/detail', $data);
+    }
+
+    // =========================================================
+    // FUNGSI RAHASIA PENGHITUNG KLASEMEN (WAJIB DITAMBAHKAN)
+    // =========================================================
+    private function _calculateStandings($tournament_id)
+    {
+        $teamModel = new \App\Models\TeamModel();
+        $matchModel = new \App\Models\MatchModel();
+        
+        $teams = $teamModel->where('tournament_id', $tournament_id)->where('status', 'approved')->findAll();
+        $matches = $matchModel->where('tournament_id', $tournament_id)->where('status', 'completed')->findAll();
+        
+        $standings = [];
+        
+        // Siapkan papan klasemen kosong untuk semua tim
+        foreach ($teams as $t) {
+            $standings[$t['id']] = [
+                'team_id' => $t['id'],
+                'name' => $t['team_name'],
+                'played' => 0, 'win' => 0, 'draw' => 0, 'loss' => 0,
+                'gf' => 0, 'ga' => 0, 'gd' => 0, 'points' => 0
+            ];
+        }
+
+        // Hitung skor dari setiap pertandingan yang sudah selesai
+        foreach ($matches as $m) {
+            if (!$m['team1_id'] || !$m['team2_id']) continue; // Lewati jika tim dapat BYE
+
+            $s1 = $m['score_team1'];
+            $s2 = $m['score_team2'];
+
+            $standings[$m['team1_id']]['played']++;
+            $standings[$m['team2_id']]['played']++;
+            
+            $standings[$m['team1_id']]['gf'] += $s1; // Gol Memasukkan (Goal For)
+            $standings[$m['team1_id']]['ga'] += $s2; // Gol Kemasukan (Goal Against)
+            
+            $standings[$m['team2_id']]['gf'] += $s2;
+            $standings[$m['team2_id']]['ga'] += $s1;
+
+            if ($s1 > $s2) {
+                // Tim 1 Menang
+                $standings[$m['team1_id']]['win']++;
+                $standings[$m['team1_id']]['points'] += 3;
+                $standings[$m['team2_id']]['loss']++;
+            } elseif ($s2 > $s1) {
+                // Tim 2 Menang
+                $standings[$m['team2_id']]['win']++;
+                $standings[$m['team2_id']]['points'] += 3;
+                $standings[$m['team1_id']]['loss']++;
+            } else {
+                // Seri / Draw
+                $standings[$m['team1_id']]['draw']++;
+                $standings[$m['team2_id']]['draw']++;
+                $standings[$m['team1_id']]['points'] += 1;
+                $standings[$m['team2_id']]['points'] += 1;
+            }
+        }
+
+        // Hitung Selisih Gol (Goal Difference)
+        foreach ($standings as &$s) { 
+            $s['gd'] = $s['gf'] - $s['ga']; 
+        }
+
+        // Urutkan Klasemen: Poin Tertinggi -> Selisih Gol Terbaik -> Cetak Gol Terbanyak
+        usort($standings, function($a, $b) {
+            if ($a['points'] != $b['points']) return $b['points'] - $a['points'];
+            if ($a['gd'] != $b['gd']) return $b['gd'] - $a['gd'];
+            return $b['gf'] - $a['gf'];
+        });
+
+        // Reset indeks array kembali ke 0, 1, 2, dst setelah diurutkan
+        return array_values($standings);
     }
 
     public function daftar($id)
@@ -112,7 +204,11 @@ class Turnamen extends BaseController
 
         $teamModel->save($data);
 
-        return redirect()->to('/tim-saya')->with('success', 'Pendaftaran berhasil dikirim! Silakan tunggu persetujuan Admin.');
+        // Ambil ID dari data yang baru saja dimasukkan
+        $newTeamId = $teamModel->insertID();
+
+        // Arahkan ke halaman pembayaran dengan membawa ID Tim
+        return redirect()->to('/turnamen/pembayaran/' . $newTeamId);
     }
 
     public function timSaya()
@@ -176,6 +272,17 @@ class Turnamen extends BaseController
         $teamModel->delete($team_id);
 
         return redirect()->back()->with('success', 'Pendaftaran berhasil dibatalkan.');
+    }
+
+    public function pembayaran($team_id)
+    {
+        $teamModel = new \App\Models\TeamModel();
+        $tournamentModel = new \App\Models\TournamentModel();
+
+        $data['tim'] = $teamModel->find($team_id);
+        $data['turnamen'] = $tournamentModel->find($data['tim']['tournament_id']);
+
+        return view('turnamen/pembayaran', $data);
     }
 
 }
