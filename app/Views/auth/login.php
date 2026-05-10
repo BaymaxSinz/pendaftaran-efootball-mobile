@@ -29,7 +29,7 @@
                             <i class="fas fa-gamepad fa-2x text-warning"></i>
                         </div>
                         <h4 class="card-title fw-bolder text-uppercase mb-1" style="letter-spacing: 1px;">Player <span class="text-warning">Login</span></h4>
-                        <p class="text-light opacity-50 small">Masuk ke akun eFootball Turnamen kamu</p>
+                        <p class="text-light opacity-50 small">Masuk ke akun</p>
                     </div>
                     
                     <form action="<?= base_url('/login/process'); ?>" method="POST">

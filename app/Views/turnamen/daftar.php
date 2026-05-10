@@ -61,7 +61,7 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="in_game_name" class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Nickname (IGN) eFootball</label>
+                            <label for="in_game_name" class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Nickname (IGN)</label>
                             <div class="input-group shadow-sm">
                                 <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fas fa-gamepad"></i></span>
                                 <input type="text" class="form-control bg-dark text-white border-secondary" id="in_game_name" name="in_game_name" placeholder="Contoh: Budi_Gaming99" required>

@@ -47,7 +47,7 @@
                             
                             <input type="hidden" name="old_poster" value="<?= esc($turnamen['poster'] ?? ''); ?>">
                             <input class="form-control bg-dark text-white border-secondary" type="file" name="poster" accept="image/*">
-                            <div class="form-text text-info small mt-1" style="font-size: 0.75rem;"><i class="fas fa-mobile-alt me-1"></i> Rekomendasi rasio 9:16 (Ukuran IG Story / 1080x1920).</div>
+                            <div class="form-text text-info small mt-1" style="font-size: 0.75rem;"><i class="fas fa-mobile-alt me-1"></i> Rekomendasi Ukuran 1920x1080, Dibawah 1 Mb</div>
                         </div>
 
                         <div class="mb-4">

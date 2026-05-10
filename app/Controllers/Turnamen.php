@@ -168,11 +168,19 @@ class Turnamen extends BaseController
 
     public function simpan()
     {
-        $teamModel = new TeamModel();
-        $tournamentModel = new TournamentModel();
+        $teamModel = new \App\Models\TeamModel();
+        $tournamentModel = new \App\Models\TournamentModel();
+        
+        // Panggil penengah Database
+        $db = \Config\Database::connect();
 
         $userId = session()->get('user_id');
         $tournamentId = $this->request->getPost('tournament_id');
+
+        // =======================================================
+        // MULAI GEMBOK DATABASE (TRANSACTIONAL)
+        // =======================================================
+        $db->transStart(); 
 
         $tournament = $tournamentModel->find($tournamentId);
 
@@ -180,6 +188,7 @@ class Turnamen extends BaseController
         $currentTeams = $teamModel->where('tournament_id', $tournamentId)->countAllResults();
         
         if ($currentTeams >= $tournament['quota']) {
+            $db->transRollback(); // Batalkan semua proses!
             return redirect()->back()->with('error', 'Mohon maaf, kuota pendaftaran turnamen ini sudah penuh (' . $tournament['quota'] . '/' . $tournament['quota'] . ' Tim).');
         }
 
@@ -189,6 +198,7 @@ class Turnamen extends BaseController
                                   ->countAllResults();
 
         if ($myTeamsCount >= $tournament['max_slots']) {
+            $db->transRollback(); // Batalkan semua proses!
             return redirect()->back()->with('error', 'Kamu sudah mencapai batas maksimal pendaftaran tim di turnamen ini!');
         }
 
@@ -203,9 +213,18 @@ class Turnamen extends BaseController
         ];
 
         $teamModel->save($data);
-
-        // Ambil ID dari data yang baru saja dimasukkan
+        
         $newTeamId = $teamModel->insertID();
+
+        // =======================================================
+        // SELESAI! BUKA GEMBOK DATABASE
+        // =======================================================
+        $db->transComplete(); 
+
+        // Cek apakah ada masalah saat menyimpan (misal server down)
+        if ($db->transStatus() === false) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan sistem saat mendaftar. Silakan coba lagi.');
+        }
 
         // Arahkan ke halaman pembayaran dengan membawa ID Tim
         return redirect()->to('/turnamen/pembayaran/' . $newTeamId);

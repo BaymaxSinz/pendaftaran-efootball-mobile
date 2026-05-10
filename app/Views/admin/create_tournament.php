@@ -39,7 +39,7 @@
                         <div class="mb-4">
                             <label class="form-label text-light opacity-75 small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Poster Turnamen (Opsional)</label>
                             <input class="form-control bg-dark text-white border-secondary" type="file" name="poster" accept="image/*">
-                            <div class="form-text text-info small mt-1" style="font-size: 0.75rem;"><i class="fas fa-mobile-alt me-1"></i> Rekomendasi rasio 9:16 (Ukuran IG Story / 1080x1920).</div>
+                            <div class="form-text text-info small mt-1" style="font-size: 0.75rem;"><i class="fas fa-mobile-alt me-1"></i> Rekomendasi Ukuran 1920x1080, Dibawah 1 Mb</div>
                         </div>
 
                         <div class="mb-4">

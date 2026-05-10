@@ -1,7 +1,9 @@
 <?= $this->extend('layout/template'); ?>
 <?= $this->section('content'); ?>
 
-<div id="heroCarousel" class="carousel slide mb-5 shadow-lg rounded-4 overflow-hidden border-0" data-bs-ride="carousel">
+
+ <!-- Kasih On CAROUSSEL -->
+<!-- <div id="heroCarousel" class="carousel slide mb-5 shadow-lg rounded-4 overflow-hidden border-0" data-bs-ride="carousel">
     <div class="carousel-indicators mb-3">
         <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
         <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -9,11 +11,18 @@
     <div class="carousel-inner">
         <div class="carousel-item active">
             <div class="d-flex align-items-center justify-content-center position-relative" style="height: 240px; background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);">
-                <div class="position-absolute top-0 start-0 w-100 h-100" style="background: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop') center/cover; opacity: 0.2;"></div>
-                <div class="text-center position-relative z-1 px-4">
-                    <span class="badge bg-primary bg-gradient text-white mb-3 px-4 py-2 rounded-pill fw-bold shadow-sm" style="font-size: 0.7rem; letter-spacing: 2px;"><i class="fas fa-fire me-1"></i> MUSIM KOMPETISI BARU</span>
-                    <h2 class="fw-black text-white text-uppercase mb-2 text-shadow-lg" style="letter-spacing: 2px;">Arena <span class="text-warning">Terbuka</span></h2>
-                    <p class="text-light opacity-75 small mb-0">Siapkan skuad terbaikmu dan rebut gelar juara bulan ini!</p>
+                <div class="position-absolute top-0 start-0 w-100 h-100" 
+                            style="background: url('<?= base_url('img/pap.webp'); ?>?v=1') center 25%/cover; opacity: 0.2;">
+                </div>
+                        
+        <div class="text-center position-relative z-1 px-4">
+             <span class="badge bg-primary bg-gradient text-white mb-3 px-4 py-2 rounded-pill fw-bold shadow-sm" style="font-size: 0.7rem; letter-spacing: 2px;">
+                <i class="fas fa-fire me-1"></i> LIGA PEMBANTAI ANAK PAPA
+             </span>
+             <h2 class="fw-black text-white text-uppercase mb-2 text-shadow-lg" style="letter-spacing: 2px;">
+                    Arena <span class="text-warning">Terbuka</span>
+             </h2>
+                <p class="text-light opacity-75 small mb-0">Siapkan skuad terbaikmu dan rebut gelar juara bulan ini!</p>
                 </div>
             </div>
         </div>
@@ -28,6 +37,28 @@
             </div>
         </div>
     </div>
+</div> -->
+
+<div id="heroCarousel" class="carousel slide mb-5 shadow-lg rounded-4 overflow-hidden border-0" data-bs-ride="false"> <div class="carousel-inner">
+        <div class="carousel-item active">
+            <div class="d-flex align-items-center justify-content-center position-relative" style="height: 240px; background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);">
+                <div class="position-absolute top-0 start-0 w-100 h-100" 
+                            style="background: url('<?= base_url('img/pap.webp'); ?>?v=1') center 25%/cover; opacity: 40%;">
+                </div>
+                        
+                <div class="text-center position-relative z-1 px-4">
+                     <span class="badge bg-primary bg-gradient text-white mb-3 px-4 py-2 rounded-pill fw-bold shadow-sm" style="font-size: 0.7rem; letter-spacing: 2px;">
+                        <i class="fas fa-fire me-1"></i> LIGA PEMBANTAI ANAK PAPA
+                     </span>
+                     <h2 class="fw-black text-white text-uppercase mb-2 text-shadow-lg" style="letter-spacing: 2px;">
+                            PAP <span class="text-warning">LEAGUE</span>
+                     </h2>
+                     <p class="text-light opacity-75 small mb-0">SELAMAT DATANG DI LIGA PERTAMA PAP</p>
+                </div>
+            </div>
+        </div>
+
+        </div>
 </div>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -66,6 +97,18 @@
                         <div class="position-relative w-100 h-100 image-zoom" style="background: url('<?= $bgImage; ?>') center/contain no-repeat; z-index: 1;"></div>
                         
                         <div class="position-absolute bottom-0 start-0 w-100" style="height: 40px; background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%); z-index: 2;"></div>
+
+                        <div class="position-absolute top-0 start-0 p-3 z-3">
+                            <?php if(isset($t['format']) && $t['format'] == 'league'): ?>
+                                <span class="badge rounded-pill fw-bold" style="background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); border: 1px solid rgba(255, 193, 7, 0.5); color: #ffc107;">
+                                    <i class="fas fa-list-ol me-1"></i> SISTEM LIGA
+                                </span>
+                            <?php else: ?>
+                                <span class="badge rounded-pill fw-bold" style="background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); border: 1px solid rgba(13, 110, 253, 0.5); color: #0d6efd;">
+                                    <i class="fas fa-sitemap me-1"></i> SISTEM GUGUR
+                                </span>
+                            <?php endif; ?>
+                        </div>
 
                         <div class="position-absolute top-0 end-0 p-3 z-3">
                             <?php if($t['status'] == 'completed'): ?>
@@ -120,17 +163,17 @@
 
                         <?php if(session()->get('user_role') == 'admin'): ?>
                             <div class="mt-3 pt-3 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center position-relative" style="z-index: 3;">
-    <span class="text-danger opacity-75 fw-bold" style="font-size: 0.65rem; letter-spacing: 1px;"><i class="fas fa-shield-alt me-1"></i> ADMIN</span>
-    <div class="d-flex gap-2 flex-wrap justify-content-end">
-        
-        <?php if($t['status'] == 'ongoing'): ?>
-            <a href="<?= base_url('/admin/matches/' . $t['id']); ?>" class="btn btn-sm btn-success bg-gradient fw-bold rounded-3 shadow-sm" style="font-size: 0.7rem;"><i class="fas fa-keyboard me-1"></i> Skor</a>
-        <?php endif; ?>
+                                <span class="text-danger opacity-75 fw-bold" style="font-size: 0.65rem; letter-spacing: 1px;"><i class="fas fa-shield-alt me-1"></i> ADMIN</span>
+                                <div class="d-flex gap-2 flex-wrap justify-content-end">
+                                    
+                                    <?php if($t['status'] == 'ongoing'): ?>
+                                        <a href="<?= base_url('/admin/matches/' . $t['id']); ?>" class="btn btn-sm btn-success bg-gradient fw-bold rounded-3 shadow-sm" style="font-size: 0.7rem;"><i class="fas fa-keyboard me-1"></i> Skor</a>
+                                    <?php endif; ?>
 
-        <a href="<?= base_url('/admin/edit/' . $t['id']); ?>" class="btn btn-sm btn-dark border-warning text-warning fw-bold rounded-3 shadow-sm" style="font-size: 0.7rem;"><i class="fas fa-edit"></i> Edit</a>
-        <a href="<?= base_url('/admin/tim/' . $t['id']); ?>" class="btn btn-sm btn-dark border-info text-info fw-bold rounded-3 shadow-sm" style="font-size: 0.7rem;"><i class="fas fa-users-cog"></i> Tim</a>
-    </div>
-</div>
+                                    <a href="<?= base_url('/admin/edit/' . $t['id']); ?>" class="btn btn-sm btn-dark border-warning text-warning fw-bold rounded-3 shadow-sm" style="font-size: 0.7rem;"><i class="fas fa-edit"></i> Edit</a>
+                                    <a href="<?= base_url('/admin/tim/' . $t['id']); ?>" class="btn btn-sm btn-dark border-info text-info fw-bold rounded-3 shadow-sm" style="font-size: 0.7rem;"><i class="fas fa-users-cog"></i> Tim</a>
+                                </div>
+                            </div>
                         <?php endif; ?>
 
                     </div>

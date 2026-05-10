@@ -30,7 +30,7 @@
                             <i class="fas fa-user-plus fa-2x text-primary"></i>
                         </div>
                         <h4 class="card-title fw-bolder text-uppercase mb-1" style="letter-spacing: 1px;">Create <span class="text-primary">Account</span></h4>
-                        <p class="text-light opacity-50 small">Daftar untuk mulai mengikuti turnamen eFootball</p>
+                        <p class="text-light opacity-50 small">Daftar untuk mulai mengikuti turnamen</p>
                     </div>
                     
                     <form action="<?= base_url('/register/process'); ?>" method="POST">

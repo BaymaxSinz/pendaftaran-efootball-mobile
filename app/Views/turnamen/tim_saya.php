@@ -74,7 +74,7 @@
                                     </span>
                                 </div>
                                 <div class="col-6 p-3">
-                                    <small class="d-block text-uppercase text-secondary fw-bold mb-1" style="font-size: 0.65rem;">ID eFootball</small>
+                                    <small class="d-block text-uppercase text-secondary fw-bold mb-1" style="font-size: 0.65rem;">ID Player</small>
                                     <span class="text-info font-monospace fw-bold">
                                         <?= esc($tim['in_game_id'] ?? '-'); ?>
                                     </span>
