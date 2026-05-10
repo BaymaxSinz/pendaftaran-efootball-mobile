@@ -33,7 +33,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h5 class="fw-bolder text-uppercase mb-0 ps-3 border-start border-4 border-primary"><i class="fas fa-gamepad text-primary me-2"></i>Turnamen <span class="text-light opacity-75">Tersedia</span></h5>
     <?php if(session()->get('user_role') == 'admin'): ?>
-        <a href="<?= base_url('/admin/create_tournament'); ?>" class="btn btn-sm btn-primary bg-gradient rounded-pill fw-bold px-3 text-uppercase shadow-sm" style="font-size: 0.75rem;">
+        <a href="<?= base_url('/admin/create'); ?>" class="btn btn-sm btn-primary bg-gradient rounded-pill fw-bold px-3 text-uppercase shadow-sm" style="font-size: 0.75rem;">
             <i class="fas fa-plus me-1"></i> Buat Baru
         </a>
     <?php endif; ?>

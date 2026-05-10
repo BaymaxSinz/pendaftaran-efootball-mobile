@@ -50,7 +50,7 @@ $routes->group('admin', function($routes) {
     $routes->get('generate-league/(:num)', 'Admin::generateLeague/$1');
     
     // Rute CRUD Turnamen
-    $routes->get('create_tournament', 'Admin::create');               // Menampilkan form tambah
+    $routes->get('create', 'Admin::create');               // Menampilkan form tambah
     $routes->post('store', 'Admin::store');                // Memproses data tambah
     $routes->get('edit/(:num)', 'Admin::edit/$1');         // Menampilkan form edit
     $routes->post('update/(:num)', 'Admin::update/$1');    // Memproses data edit
