@@ -28,7 +28,7 @@
 
     <ul class="nav nav-pills nav-justified mb-4 gap-2" id="pills-tab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active rounded-pill fw-bold text-uppercase shadow-sm" id="pills-stats-tab" data-bs-toggle="pill" data-bs-target="#pills-stats" type="button" role="tab" style="font-size: 0.85rem;"><i class="fas fa-trophy me-1"></i> Trophy Room</button>
+            <button class="nav-link active rounded-pill fw-bold text-uppercase shadow-sm" id="pills-stats-tab" data-bs-toggle="pill" data-bs-target="#pills-stats" type="button" role="tab" style="font-size: 0.85rem;"><i class="fas fa-trophy me-1"></i> Trophy Room (COMING SOON)</button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link rounded-pill fw-bold text-uppercase shadow-sm" id="pills-settings-tab" data-bs-toggle="pill" data-bs-target="#pills-settings" type="button" role="tab" style="font-size: 0.85rem;"><i class="fas fa-cog me-1"></i> Pengaturan</button>
