@@ -84,7 +84,7 @@
                 $quota = $t['quota'] > 0 ? $t['quota'] : 1;
                 $percent = ($t['approved_teams'] / $quota) * 100;
                 $isFull = $t['approved_teams'] >= $t['quota'];
-                $bgImage = !empty($t['poster']) ? base_url('uploads/posters/' . $t['poster']) : 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800&auto=format&fit=crop';
+                $bgImage = !empty($t['poster']) ? base_url('uploads/posters/' . $t['poster']) : 'https://images.unsplash.com/photo-1650897877757-3adb1d87f435?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
             ?>
             <div class="col-12 col-md-6 col-lg-4 mb-4">
                 
